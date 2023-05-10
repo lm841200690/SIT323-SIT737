@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - "exec mongod -f /data/mongodb/conf/mongodb.conf --auth"
+        name: mongodb
+        image: mongo:5.0.9
+        imagePullPolicy: IfNotPresent
+        #Import values using the created secret
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-user
+                key: username
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-user
+                key: password
+        ports:
+          - containerPort: 27017
+        volumeMounts:
+          - name: mongo-pvc
+            mountPath: /data/
+        volumeMounts:
+        - name: mongodb-config
+          mountPath: /data/mongodb/conf/
+        - name: mongo-pvc
+          mountPath: /data/mongodb/
+      volumes:
+      - name: mongodb-config
+        configMap:
+          name: mongodb-conf
+      - name: mongo-pvc
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
