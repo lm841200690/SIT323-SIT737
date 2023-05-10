@@ -338,8 +338,6 @@ EOF
 
 ![image-20230510223112535](image/image-20230510223112535.png)
 
-⑤插入数据
+⑤insert data
 
 ![image-20230510223946478](image/image-20230510223946478.png)
-
-### 9.Monitor the MongoDB database and application performance to ensure that the database is running smoothly and efficiently.
